@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>İkimiz Sonsuza Kadar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>🐻 Koca Ayı & 🍳 Maşa</h1>
+    <h2>21.07.2025'ten Beri Birlikte ❤️</h2>
+
+    <p id="counter"></p>
+
+    <script>
+        const startDate = new Date("2025-07-21T00:00:00");
+
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+            document.getElementById("counter").innerText =
+                days + " gün " + hours + " saat " + minutes + " dakika";
+        }
+
+        setInterval(updateCounter, 1000);
+        updateCounter();
+    </script>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
