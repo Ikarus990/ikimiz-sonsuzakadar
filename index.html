@@ -8,42 +8,144 @@
 </head>
 
 <body>
-  <header class="top">
-    <h1 class="title">🐻 Koca Ayı & 🧸 Maşa</h1>
-    <h2 class="subtitle">21.07.2025’ten Beri Birlikte 💗</h2>
-    <div id="counter" class="counter"></div>
-  </header>
+  <div class="bg"></div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
 
-  <!-- Giriş -->
-  <section id="loginBox" class="card">
-    <div class="cardTitle">Giriş</div>
-    <div class="muted">Şifre girince kim olduğun otomatik belirlenir.</div>
+  <main class="app">
+    <header class="hero">
+      <div class="title">
+        <span class="chip">🐻</span>
+        <h1>Koca Ayı <span class="amp">&</span> Maşa</h1>
+        <span class="chip">🧸</span>
+      </div>
+      <div class="sub">21.07.2025’ten beri birlikte <span class="heart">💗</span></div>
+      <div id="counter" class="counter">—</div>
+    </header>
 
-    <input id="passInput" class="input" type="password" placeholder="Şifre" autocomplete="off" />
-    <button id="loginBtn" class="btnPrimary">Giriş Yap</button>
-    <div id="loginErr" class="err"></div>
+    <!-- AUTH CARD -->
+    <section id="authCard" class="card auth">
+      <div class="cardHead">
+        <div class="cardTitle">🔒 Giriş</div>
+        <div class="muted">Email + şifre ile giriş yapın (2 hesap).</div>
+      </div>
 
-    <div class="muted small" style="margin-top:10px">
-      Not: Bu şifreler sadece bu sayfada çalışır (gerçek güvenlik değildir).
-    </div>
-  </section>
+      <div class="form">
+        <label class="lbl">Email</label>
+        <input id="email" class="input" type="email" placeholder="ornek@gmail.com" autocomplete="username" />
+        <label class="lbl">Şifre</label>
+        <input id="password" class="input" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <button id="btnLogin" class="btn primary">Giriş Yap</button>
 
-  <!-- Sohbet -->
-  <section id="chatBox" class="card hidden">
-    <div class="chatHeader">
-      <div id="whoAmI" class="who"></div>
-      <button id="logoutBtn" class="btnGhost" title="Çıkış">Çıkış</button>
-    </div>
+        <div class="row tiny">
+          <button id="btnRegister" class="btn ghost">İlk kez mi? Kayıt ol (sadece sen kullan)</button>
+          <button id="btnReset" class="btn ghost">Şifreyi unuttum</button>
+        </div>
 
-    <div id="messages" class="messages"></div>
+        <div id="authErr" class="err"></div>
+      </div>
+    </section>
 
-    <div class="sendRow">
-      <input id="msgInput" class="input" type="text" placeholder="Mesaj yaz..." maxlength="300" />
-      <button id="sendBtn" class="btnSend">Gönder</button>
-    </div>
+    <!-- APP CARD -->
+    <section id="appCard" class="card hidden">
+      <div class="topbar">
+        <div class="me">
+          <div class="avatar" id="meAvatar">💫</div>
+          <div>
+            <div class="meName" id="meName">—</div>
+            <div class="muted tiny" id="meEmail">—</div>
+          </div>
+        </div>
 
-    <div class="muted small">Mesajlar kalıcıdır. Silme yok.</div>
-  </section>
+        <div class="topActions">
+          <button id="btnSignOut" class="btn ghost">Çıkış</button>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="chat">💬 Sohbet</button>
+        <button class="tab" data-tab="gallery">📸 Galeri</button>
+        <button class="tab" data-tab="memories">✨ Anılar</button>
+        <button class="tab" data-tab="journal">📝 Günlük</button>
+      </nav>
+
+      <!-- CHAT -->
+      <section id="tab-chat" class="pane">
+        <div class="paneHead">
+          <div class="paneTitle">Sohbet</div>
+          <div class="muted tiny">Mesajlar canlı güncellenir.</div>
+        </div>
+
+        <div id="messages" class="messages"></div>
+
+        <div class="composer">
+          <input id="msgInput" class="input" type="text" placeholder="Bir şey yaz..." maxlength="500" />
+          <button id="sendBtn" class="btn primary">Gönder</button>
+        </div>
+      </section>
+
+      <!-- GALLERY -->
+      <section id="tab-gallery" class="pane hidden">
+        <div class="paneHead">
+          <div class="paneTitle">Galeri</div>
+          <div class="muted tiny">Foto & video yükle, ikiniz de görüp indirebilirsiniz.</div>
+        </div>
+
+        <div class="uploadBox">
+          <input id="filePicker" type="file" accept="image/*,video/*" />
+          <button id="uploadBtn" class="btn primary">Yükle</button>
+          <div id="uploadInfo" class="muted tiny"></div>
+        </div>
+
+        <div id="gallery" class="gallery"></div>
+      </section>
+
+      <!-- MEMORIES -->
+      <section id="tab-memories" class="pane hidden">
+        <div class="paneHead">
+          <div class="paneTitle">Anılar</div>
+          <div class="muted tiny">Kısa anı kartları (tarih + başlık + açıklama).</div>
+        </div>
+
+        <div class="grid2">
+          <div class="miniCard">
+            <label class="lbl">Başlık</label>
+            <input id="memTitle" class="input" placeholder="Örn: İlk buluşma" />
+            <label class="lbl">Açıklama</label>
+            <textarea id="memText" class="input textarea" placeholder="Kısaca yaz..."></textarea>
+            <button id="memAdd" class="btn primary">Anı Ekle</button>
+            <div id="memErr" class="err"></div>
+          </div>
+
+          <div class="miniCard">
+            <div class="muted tiny">Anılar</div>
+            <div id="memList" class="memList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- JOURNAL -->
+      <section id="tab-journal" class="pane hidden">
+        <div class="paneHead">
+          <div class="paneTitle">Günlük</div>
+          <div class="muted tiny">Bugünün notu (ikiniz de görür / düzenler).</div>
+        </div>
+
+        <div class="miniCard">
+          <textarea id="journalText" class="input textarea tall" placeholder="Bugün aklımdan geçenler..."></textarea>
+          <div class="row">
+            <button id="journalSave" class="btn primary">Kaydet</button>
+            <div id="journalSaved" class="muted tiny"></div>
+          </div>
+          <div id="journalErr" class="err"></div>
+        </div>
+      </section>
+
+      <footer class="footer muted tiny">
+        Bu alan sadece sizindir 💗
+      </footer>
+    </section>
+  </main>
 
   <script type="module" src="./app.js"></script>
 </body>
