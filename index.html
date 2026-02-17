@@ -1,125 +1,40 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>İkimiz Sonsuza Kadar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-    }
-
-    h1 {
-      margin-top: 40px;
-    }
-
-    #counter {
-      font-size: 22px;
-      color: #ff6b6b;
-      margin-bottom: 30px;
-    }
-
-    .chat-container {
-      width: 350px;
-      margin: auto;
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 15px;
-    }
-
-    #chat {
-      height: 250px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-      text-align: left;
-    }
-
-    .message {
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 10px;
-      max-width: 75%;
-    }
-
-    .me {
-      background: #ff6b6b;
-      color: white;
-      margin-left: auto;
-      text-align: right;
-    }
-
-    .other {
-      background: #444;
-      color: white;
-      margin-right: auto;
-    }
-
-    .input-area {
-      display: flex;
-      gap: 5px;
-    }
-
-    #messageInput {
-      flex: 1;
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    #sendBtn {
-      background: #ff6b6b;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-    }
-
-  </style>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
+  <div class="wrap">
+    <h1 class="title">🐻 Koca Ayı & 🧸 Maşa</h1>
+    <h2 class="subtitle">21.07.2025’ten beri birlikte ❤️</h2>
+    <div id="counter" class="counter">...</div>
 
-  <h1>🐻 Koca Ayı & 🧸 Maşa</h1>
-  <h2>21.07.2025'ten Beri Birlikte ❤️</h2>
+    <!-- GİRİŞ -->
+    <div id="loginCard" class="card">
+      <div class="cardTitle">Giriş</div>
+      <p class="hint">Şifreyi yaz ve devam et.</p>
+      <input id="passInput" class="input" type="password" placeholder="Şifre..." autocomplete="off"/>
+      <button id="loginBtn" class="btn">Giriş Yap</button>
+      <div id="loginMsg" class="msg"></div>
+    </div>
 
-  <div id="counter"></div>
+    <!-- SOHBET -->
+    <div id="chatCard" class="card hidden">
+      <div id="chatHeader" class="chatHeader">Sohbet</div>
 
-  <div class="chat-container">
-    <div id="chat"></div>
+      <div id="messages" class="messages"></div>
 
-    <div class="input-area">
-      <input type="text" id="messageInput" placeholder="Mesaj yaz...">
-      <button id="sendBtn">Gönder</button>
+      <div class="sendRow">
+        <input id="textInput" class="input" type="text" placeholder="Mesaj yaz..." autocomplete="off"/>
+        <button id="sendBtn" class="btn">Gönder</button>
+      </div>
+      <div class="footnote">Mesajlar cihazda saklanır. (Şimdilik)</div>
     </div>
   </div>
 
-  <!-- Sayaç -->
-  <script>
-    const startDate = new Date("2025-07-21T00:00:00");
-
-    function updateCounter() {
-      const now = new Date();
-      const diff = now - startDate;
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-      document.getElementById("counter").innerText =
-        days + " gün " + hours + " saat " + minutes + " dakika";
-    }
-
-    setInterval(updateCounter, 1000);
-    updateCounter();
-  </script>
-
-  <!-- Firebase Chat -->
-  <script type="module" src="app.js"></script>
-
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
