@@ -1,39 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>İkimiz Sonsuza Kadar</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
-  <div class="wrap">
+  <header class="top">
     <h1 class="title">🐻 Koca Ayı & 🧸 Maşa</h1>
-    <h2 class="subtitle">21.07.2025’ten beri birlikte ❤️</h2>
-    <div id="counter" class="counter">...</div>
+    <h2 class="subtitle">21.07.2025’ten Beri Birlikte 💗</h2>
+    <div id="counter" class="counter"></div>
+  </header>
 
-    <!-- GİRİŞ -->
-    <div id="loginCard" class="card">
-      <div class="cardTitle">Giriş</div>
-      <p class="hint">Şifreyi yaz ve devam et.</p>
-      <input id="passInput" class="input" type="password" placeholder="Şifre..." autocomplete="off"/>
-      <button id="loginBtn" class="btn">Giriş Yap</button>
-      <div id="loginMsg" class="msg"></div>
+  <!-- Giriş -->
+  <section id="loginBox" class="card">
+    <div class="cardTitle">Giriş</div>
+    <div class="muted">Şifre girince kim olduğun otomatik belirlenir.</div>
+
+    <input id="passInput" class="input" type="password" placeholder="Şifre" autocomplete="off" />
+    <button id="loginBtn" class="btnPrimary">Giriş Yap</button>
+    <div id="loginErr" class="err"></div>
+
+    <div class="muted small" style="margin-top:10px">
+      Not: Bu şifreler sadece bu sayfada çalışır (gerçek güvenlik değildir).
+    </div>
+  </section>
+
+  <!-- Sohbet -->
+  <section id="chatBox" class="card hidden">
+    <div class="chatHeader">
+      <div id="whoAmI" class="who"></div>
+      <button id="logoutBtn" class="btnGhost" title="Çıkış">Çıkış</button>
     </div>
 
-    <!-- SOHBET -->
-    <div id="chatCard" class="card hidden">
-      <div id="chatHeader" class="chatHeader">Sohbet</div>
+    <div id="messages" class="messages"></div>
 
-      <div id="messages" class="messages"></div>
-
-      <div class="sendRow">
-        <input id="textInput" class="input" type="text" placeholder="Mesaj yaz..." autocomplete="off"/>
-        <button id="sendBtn" class="btn">Gönder</button>
-      </div>
-      <div class="footnote">Mesajlar cihazda saklanır. (Şimdilik)</div>
+    <div class="sendRow">
+      <input id="msgInput" class="input" type="text" placeholder="Mesaj yaz..." maxlength="300" />
+      <button id="sendBtn" class="btnSend">Gönder</button>
     </div>
-  </div>
+
+    <div class="muted small">Mesajlar kalıcıdır. Silme yok.</div>
+  </section>
 
   <script type="module" src="./app.js"></script>
 </body>

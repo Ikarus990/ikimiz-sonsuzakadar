@@ -1,274 +1,199 @@
-// =====================
-// 1) ŞİFRELER (BURASI)
-// =====================
-const PASS_KOCA = "ikimiz-sonsuzakadar";
-const PASS_MASA = "SerFer-21.07.2025";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-// Kullanıcı rolleri
-const USERS = {
-  koca: { label: "🐻 Koca Ayı" },
-  masa: { label: "🔍 Maşa" } // emoji istersen değiştir: 🧸🍳🔎 vs.
+// ✅ Firebase config (senin)
+const firebaseConfig = {
+  apiKey: "AIzaSyCtmXU5iEhJVTLFz9nhTOjfsclxfynhM3Q",
+  authDomain: "ikimiz-sonsuzakadar.firebaseapp.com",
+  projectId: "ikimiz-sonsuzakadar",
+  storageBucket: "ikimiz-sonsuzakadar.firebasestorage.app",
+  messagingSenderId: "849349503146",
+  appId: "1:849349503146:web:7d3af60830496e913ec8d3",
+  measurementId: "G-0NJT5GV74Y"
 };
 
-let currentUser = null;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// =====================
-// 2) GİRİŞ / HATIRLAMA
-// =====================
-function setUser(userKey) {
-  currentUser = userKey;
-  localStorage.setItem("ikimiz_user", userKey); // ✅ tekrar girince hatırlasın
-}
-
-function showChatHideLogin() {
-  const login = document.getElementById("loginScreen");
-  if (login) login.style.display = "none";
-
-  const input = document.getElementById("messageInput");
-  if (input) input.focus();
-}
-
-function showLogin() {
-  const login = document.getElementById("loginScreen");
-  if (login) login.style.display = "flex";
-}
-
-function loginWithPassword() {
-  const passInput = document.getElementById("passInput");
-  const err = document.getElementById("loginError");
-
-  const pass = (passInput?.value || "").trim();
-
-  if (pass === PASS_KOCA) {
-    setUser("koca");
-  } else if (pass === PASS_MASA) {
-    setUser("masa");
-  } else {
-    if (err) err.textContent = "❌ Şifre yanlış. Tekrar dene.";
-    return;
-  }
-
-  if (err) err.textContent = "";
-  if (passInput) passInput.value = ""; // ✅ şifre kutusu temizlensin
-  showChatHideLogin();
-}
-
-function logout() {
-  localStorage.removeItem("ikimiz_user");
-  currentUser = null;
-  showLogin();
-}
-
-// Sayfa açılınca: daha önce giren kişiyi hatırla
-document.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("ikimiz_user");
-  if (saved === "koca" || saved === "masa") {
-    currentUser = saved;
-    showChatHideLogin();
-  } else {
-    showLogin();
-  }
-
-  const btn = document.getElementById("loginBtn");
-  const passInput = document.getElementById("passInput");
-
-  if (btn) btn.addEventListener("click", loginWithPassword);
-  if (passInput) {
-    passInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") loginWithPassword();
-    });
-  }
-
-  // Mesaj kutusunda Enter ile gönder
-  const msgInput = document.getElementById("messageInput");
-  if (msgInput) {
-    msgInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-  }
-});
-
-// =====================
-// 3) MESAJ GÖNDERME
-// =====================
-function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const chatBox = document.getElementById("chatBox");
-  if (!input || !chatBox) return;
-
-  const text = input.value.trim();
-  if (!text) return;
-
-  if (!currentUser) {
-    alert("Önce şifre ile giriş yapmalısın.");
-    return;
-  }
-
-  const msg = document.createElement("div");
-  msg.classList.add("message");
-
- // =====================
-// AYARLAR
-// =====================
-const START_DATE = "2025-07-21T00:00:00";
-
-// Şifre -> kullanıcı bilgisi
-const USERS = {
-  "ikimiz-sonsuzakadar": { name: "🐻 Koca Ayı" },
-  "SerFer-21.07.2025":  { name: "🧸 Maşa" }
-};
-
-// =====================
-// SAYFA ELEMANLARI
-// =====================
-const counterEl = document.getElementById("counter");
-
-const loginCard = document.getElementById("loginCard");
+// --- UI ---
+const loginBox = document.getElementById("loginBox");
+const chatBox = document.getElementById("chatBox");
 const passInput = document.getElementById("passInput");
 const loginBtn = document.getElementById("loginBtn");
-const loginMsg = document.getElementById("loginMsg");
+const loginErr = document.getElementById("loginErr");
+const logoutBtn = document.getElementById("logoutBtn");
 
-const chatCard = document.getElementById("chatCard");
-const chatHeader = document.getElementById("chatHeader");
+const whoAmI = document.getElementById("whoAmI");
 const messagesEl = document.getElementById("messages");
-const textInput = document.getElementById("textInput");
+const msgInput = document.getElementById("msgInput");
 const sendBtn = document.getElementById("sendBtn");
 
-// =====================
-// SAYAÇ
-// =====================
-function updateCounter() {
-  const start = new Date(START_DATE);
-  const now = new Date();
-  const diff = now - start;
+const counterEl = document.getElementById("counter");
 
+// --- Sayaç ---
+const startDate = new Date("2025-07-21T00:00:00");
+function updateCounter() {
+  const now = new Date();
+  const diff = now - startDate;
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-  counterEl.textContent = `${days} gün ${hours} saat ${minutes} dakika`;
+  const mins = Math.floor((diff / (1000 * 60)) % 60);
+  counterEl.textContent = `${days} gün ${hours} saat ${mins} dakika`;
 }
 setInterval(updateCounter, 1000);
 updateCounter();
 
-// =====================
-// MESAJLAR (şimdilik localStorage)
-// =====================
-const STORAGE_KEY = "ikimiz_chat_messages_v1";
-const WHO_KEY = "ikimiz_who_v1";
+// --- Kimlik (Şifre -> kişi) ---
+// ✅ Şifreler BURADA. (Birebir aynı yazılmalı, büyük/küçük harf dahil)
+const PASS_TO_USER = {
+  "ikimiz-sonsuzakadar": { id: "koca", name: "🐻 Koca Ayı" },
+  "SerFer-21.07.2025":  { id: "masa", name: "🧸 Maşa" }
+};
 
-function loadMessages() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? []; }
-  catch { return []; }
-}
-function saveMessages(arr) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+function setUser(user) {
+  localStorage.setItem("ikimiz_user", JSON.stringify(user));
+  whoAmI.textContent = `Sohbet - ${user.name}`;
 }
 
-function renderMessages() {
-  const msgs = loadMessages();
-  messagesEl.innerHTML = "";
+function getUser() {
+  try { return JSON.parse(localStorage.getItem("ikimiz_user")); }
+  catch { return null; }
+}
 
-  for (const m of msgs) {
-    const row = document.createElement("div");
-    row.className = "bubbleRow " + (m.side === "right" ? "right" : "left");
+function showChat() {
+  loginBox.classList.add("hidden");
+  chatBox.classList.remove("hidden");
+  msgInput.focus();
+}
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble " + (m.side === "right" ? "me" : "");
+function showLogin() {
+  chatBox.classList.add("hidden");
+  loginBox.classList.remove("hidden");
+  passInput.value = "";
+  passInput.focus();
+}
 
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    meta.textContent = m.from;
-
-    const text = document.createElement("div");
-    text.className = "text";
-    text.textContent = m.text;
-
-    bubble.appendChild(meta);
-    bubble.appendChild(text);
-    row.appendChild(bubble);
-    messagesEl.appendChild(row);
+function doLogin() {
+  loginErr.textContent = "";
+  const pass = (passInput.value || "").trim();
+  const user = PASS_TO_USER[pass];
+  if (!user) {
+    loginErr.textContent = "Şifre yanlış. Tekrar dene.";
+    return;
   }
-
-  // en alta kaydır
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  setUser(user);
+  showChat();
 }
 
-// =====================
-// GİRİŞ / KİMİM?
-// =====================
-let currentUser = null;
-
-function setUserByPassword(pass) {
-  const user = USERS[pass];
-  if (!user) return false;
-
-  currentUser = user;
-  localStorage.setItem(WHO_KEY, pass);
-
-  // UI
-  loginCard.classList.add("hidden");
-  chatCard.classList.remove("hidden");
-  chatHeader.textContent = `Sohbet - ${user.name}`;
-
-  renderMessages();
-  return true;
-}
-
-function autoLoginIfRemembered() {
-  const saved = localStorage.getItem(WHO_KEY);
-  if (saved && USERS[saved]) {
-    setUserByPassword(saved);
-  }
-}
-autoLoginIfRemembered();
-
-loginBtn.addEventListener("click", () => {
-  const pass = passInput.value.trim();
-  if (setUserByPassword(pass)) {
-    loginMsg.textContent = "";
-    passInput.value = "";
-  } else {
-    loginMsg.textContent = "Şifre yanlış. Tekrar dene.";
-  }
-});
-
+loginBtn.addEventListener("click", doLogin);
 passInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") loginBtn.click();
+  if (e.key === "Enter") doLogin();
 });
 
-// =====================
-// MESAJ GÖNDER
-// =====================
-function sendMessage() {
-  if (!currentUser) {
-    loginMsg.textContent = "Önce giriş yapmalısın.";
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("ikimiz_user");
+  showLogin();
+});
+
+// --- Firestore: Mesajlar ---
+const msgsRef = collection(db, "messages");
+const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+function formatTime(ts) {
+  try {
+    if (!ts) return "";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  } catch {
+    return "";
+  }
+}
+
+function escapeHtml(s) {
+  return (s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function renderMessage(docData) {
+  const user = getUser();
+  const mine = user && docData.senderId === user.id;
+
+  const row = document.createElement("div");
+  row.className = `msgRow ${mine ? "me" : "other"}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = docData.senderName || "Bilinmeyen";
+
+  const text = document.createElement("div");
+  text.innerHTML = escapeHtml(docData.text || "");
+
+  const time = document.createElement("div");
+  time.className = "time";
+  time.textContent = formatTime(docData.createdAt);
+
+  bubble.appendChild(meta);
+  bubble.appendChild(text);
+  bubble.appendChild(time);
+
+  row.appendChild(bubble);
+  return row;
+}
+
+onSnapshot(q, (snap) => {
+  messagesEl.innerHTML = "";
+  snap.forEach((d) => {
+    const data = d.data();
+    messagesEl.appendChild(renderMessage(data));
+  });
+  // En alta kaydır
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+});
+
+async function sendMessage() {
+  const user = getUser();
+  if (!user) {
+    showLogin();
     return;
   }
 
-  const text = textInput.value.trim();
+  const text = (msgInput.value || "").trim();
   if (!text) return;
 
-  // Sağ/sol baloncuk: kendi mesajın sağda
-  const myName = currentUser.name;
-
-  const msgs = loadMessages();
-  msgs.push({
-    from: myName,
-    text,
-    side: "right",
-    at: Date.now()
-  });
-
-  saveMessages(msgs);
-  renderMessages();
-
   // ✅ Gönderince input temizlensin
-  textInput.value = "";
-  textInput.focus();
+  msgInput.value = "";
+  msgInput.focus();
+
+  await addDoc(msgsRef, {
+    text,
+    senderId: user.id,
+    senderName: user.name,
+    createdAt: serverTimestamp()
+  });
 }
 
 sendBtn.addEventListener("click", sendMessage);
-textInput.addEventListener("keydown", (e) => {
+msgInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") sendMessage();
 });
+
+// Sayfa açılınca: kullanıcı varsa direkt sohbet, yoksa giriş
+if (getUser()) showChat();
+else showLogin();
